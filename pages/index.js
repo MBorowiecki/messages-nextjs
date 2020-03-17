@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Cookie from 'js-cookie';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import Router from 'next/router';
 
 const MainContainer = styled.div`
     background-color: #363636;
@@ -34,13 +37,29 @@ const FacebookButton = styled.div`
     }
 `
 
+const responseFacebook = (res) => {
+    console.log(res); // To delete.
+
+    Cookie.set('userProfile', JSON.stringify(res));
+
+    Router.push('/home');
+}
+
 export default () => {
     return(
         <MainContainer>
             <LoginContainer>
-                <FacebookButton>
-                    Continue with Facebook
-                </FacebookButton>
+                <FacebookLogin 
+                    appId="206550377089017"
+                    autoLoad
+                    callback={responseFacebook}
+                    fields="name,email,picture"
+                    render={renderProps => (
+                        <FacebookButton>
+                            Continue with Facebook
+                        </FacebookButton>
+                    )}
+                />
             </LoginContainer>
         </MainContainer>
     )
