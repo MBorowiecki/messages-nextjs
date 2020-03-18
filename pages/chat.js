@@ -15,7 +15,7 @@ const MainContainer = styled.div`
   padding: 0px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 `
 
 const MessagesList = styled.ul`
