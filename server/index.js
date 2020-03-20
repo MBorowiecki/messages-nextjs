@@ -151,7 +151,7 @@ nextApp.prepare().then(() => {
         return handle(req, res);
     })
 
-    http.listen(port, err => {
+    http.listen(process.env.PORT || port, err => {
         if(err){
                 throw err;
         }else{
