@@ -3,6 +3,9 @@ import Link from 'next/link'
 import styled from 'styled-components';
 import SendIcon from '@material-ui/icons/Send';
 import BackIcon from '@material-ui/icons/ArrowBack';
+import cookie from 'js-cookie';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const io = require('socket.io-client');
 
@@ -16,6 +19,7 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  font-family: 'Lato';
 `
 
 const MessagesList = styled.ul`
@@ -34,7 +38,6 @@ const Message = styled.li`
   margin: 16px;
   background-color: #6e3a2f;
   border-radius: 10px;
-  font-family: 'Segoe UI';
   list-style-type: none;
   box-shadow: 0px 4px 10px #00000033;
   margin-top: 0px;
@@ -87,7 +90,6 @@ const TopBar = styled.div`
 const GoBackContainer = styled.div`
   margin: 8px;
   padding: 12px;
-  font-family: 'Segoe UI';
   font-size: 18px;
   color: #ffffff;
   margin-bottom: 0px;
@@ -97,7 +99,7 @@ const GoBackContainer = styled.div`
 
   :hover{
     cursor: pointer;
-    background-color: #24242433;
+    background-color: #24242444;
   }
 `
 
@@ -106,22 +108,35 @@ const GoBackIcon = styled(BackIcon)`
 `
 
 export default () => {
+  const router = useRouter();
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState("");
+  const [userProfile, setUserProfile] = useState({});
 
   socket.on('msgReceived', data => {
-    setMessages(msgs => data.msgs);
+    setMessages(msgs => data.msgs)
   })
 
   useEffect(() => {
-      return () => {
-        socket.off('msgReceived');
+    let _prof = JSON.parse(cookie.get('userProfile'));
+    setUserProfile(_prof);
+
+    const IsUserPermittedToJoin = async () => {
+      let users = await axios.post('http://localhost:3000/api/lobby/get-users', {lobbyId: router.query.chatId});
+
+      if(users.data){
+        if(!users.data.includes(_prof.id)){
+          router.push('/home');
+        }
       }
+    }
+
+    IsUserPermittedToJoin();
   }, [])
 
   const sendMessage = () => {
     if(inputVal.length > 0){
-      socket.emit('msgSend', inputVal);
+      socket.emit('msgSend', {text: inputVal, room: router.query.chatId, sender: userProfile.id});
       setInputVal("");
     }
   }
@@ -129,16 +144,20 @@ export default () => {
   return(
     <MainContainer>
       <TopBar>
-        <GoBackContainer>
-          <GoBackIcon />
-          Go back
-        </GoBackContainer>
+        <Link href="/home">
+          <GoBackContainer>
+            <GoBackIcon />
+            Go back
+          </GoBackContainer>
+        </Link>
       </TopBar>
       <MessagesList>
         {messages.map((msg, index) => {
-          return(
-            <Message key={index}>{msg}</Message>
-          )
+          if(msg.room === router.query.chatId){
+            return(
+              <Message key={index}>{msg.text}</Message>
+            )
+          }
         })}
       </MessagesList>
       <InputContainer>

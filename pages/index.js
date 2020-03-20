@@ -14,7 +14,7 @@ const MainContainer = styled.div`
     height: 100vh;
     justify-content: center;
     align-items: center;
-    font-family: 'Segoe UI';
+    font-family: 'Lato';
 `
 
 const LoginContainer = styled.div`
