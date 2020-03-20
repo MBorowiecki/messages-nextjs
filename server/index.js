@@ -4,6 +4,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http)
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const port = process.env.PORT;
 
@@ -16,6 +17,7 @@ const LobbyModel = require('./schemas/lobby');
 let msgs = []
 
 app.use(bodyParser.json());
+app.use(cors());
 
 mongoose.connect('mongodb://testadmin:testadmin1@ds034198.mlab.com:34198/messages-nextjs', {useNewUrlParser: true, useUnifiedTopology: true})
 
