@@ -5,7 +5,7 @@ const io = require('socket.io')(http)
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-const port = 3000;
+const port = 3000 || process.env.PORT;
 
 const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
@@ -151,7 +151,7 @@ nextApp.prepare().then(() => {
         return handle(req, res);
     })
 
-    http.listen(process.env.PORT || port, err => {
+    http.listen(port, 'localhost' || '0.0.0.0' ,err => {
         if(err){
                 throw err;
         }else{
