@@ -132,6 +132,15 @@ export default () => {
     }
 
     IsUserPermittedToJoin();
+
+    const GetPastMessages = async () => {
+      let res = await axios.post('http://localhost:3000/api/lobby/get-messages', {lobbyId: router.query.chatId});
+
+      console.log(res.data);
+      setMessages(_msgs => res.data);
+    }
+
+    GetPastMessages();
   }, [])
 
   const sendMessage = () => {

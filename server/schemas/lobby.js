@@ -9,6 +9,10 @@ const LobbyModel = mongoose.model(
         users: {
             type: Array,
             default: []
+        },
+        messages: {
+            type: Array,
+            default: []
         }
     }
 )

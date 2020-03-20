@@ -4,6 +4,7 @@ import cookie from 'js-cookie';
 import axios from 'axios';
 import Link from 'next/link';
 import { Dialog } from '@material-ui/core'
+import { Add } from '@material-ui/icons';
 
 const MainContainer = styled.div`
     background-color: #363636;
@@ -18,21 +19,42 @@ const MainContainer = styled.div`
     font-family: 'Lato';
 `
 
-const CreateLobbyButton = styled.input`
+const CreateLobbyContainer = styled.div`
     color: #ffffff;
-    font-size: 18px;
-    outline: none;
-    border: none;
     border-radius: 10px;
     background-color: #24242400;
     transition-duration: 100ms;
     padding: 16px;
     margin-top: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 
     :hover{
         cursor: pointer;
         background-color: #24242444;
     }
+`
+
+const CreateLobbyButton = styled.input`
+    font-size: 18px;
+    border: none;
+    background-color: transparent;
+    margin-left: 16px;
+    color: #ffffff;
+
+    :hover{
+        cursor: pointer;
+    }
+
+    :focus{
+        outline: none;
+    }
+`
+
+const AddIcon = styled(Add)`
+    color: #ffffff;
 `
 
 const LobbiesList = styled.section`
@@ -152,7 +174,10 @@ const Home = () => {
 
     return(
         <MainContainer>
-            <CreateLobbyButton type="button" value="Create lobby" onClick={() => setDialogOpen(true)} />
+            <CreateLobbyContainer onClick={() => setDialogOpen(true)} >
+                <AddIcon size={20} />
+                <CreateLobbyButton type="button" value="Create lobby"/>
+            </CreateLobbyContainer>
             <LobbiesList>
                 {lobbies.map((lobby, index) => {
                     let ret = false;

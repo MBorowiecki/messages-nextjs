@@ -21,15 +21,29 @@ mongoose.connect('mongodb://testadmin:testadmin1@ds034198.mlab.com:34198/message
 
 nextApp.prepare().then(() => {
 
-    io.on('connection', socket =>{
+    io.on('connection', socket => {
         socket.emit('msgReceived', {msgs});
+        socket.broadcast.emit('msgReceived', {msgs});
 
         socket.on('msgSend', msg => {
-            msgs.push(msg);
-            setTimeout(() => {
-                socket.broadcast.emit('msgReceived', {msgs});
-                socket.emit('msgReceived', {msgs});
-            }, 100)
+            LobbyModel.findOne({_id: msg.room}, (err, docs) => {
+                if(err){
+                    throw err;
+                }
+
+                let _msgs = docs.messages;
+
+                _msgs.push(msg);
+                LobbyModel.updateOne({_id: msg.room}, {$set: {messages: _msgs}} ,(err, res) => {
+                    if(err){
+                        throw err;
+                    }
+
+                    socket.broadcast.emit('msgReceived', {msgs: _msgs});
+                    socket.emit('msgReceived', {msgs: _msgs});
+                })
+            })  
+            //msgs.push(msg);
         })
     })
 
@@ -114,6 +128,21 @@ nextApp.prepare().then(() => {
 
                     res.status(200).send(docs);
                 })
+            })
+        }
+    })
+
+    app.post('/api/lobby/get-messages', (req, res) => {
+        const { lobbyId } = req.body;
+
+        if(lobbyId){
+            LobbyModel.findOne({_id: lobbyId}, (err, lobby) => {
+                if(err){
+                    res.status(500);
+                    throw err;
+                }
+
+                res.status(200).send(lobby.messages);
             })
         }
     })
